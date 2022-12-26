@@ -1,5 +1,2 @@
-#!/command/execlineb -P
-with-contenv
-fdmove -c 2 1
-s6-setuidgid dote
-/usr/local/bin/dote $DOTE_OPTS
+#!/command/with-contenv bash
+exec /command/s6-setuidgid dote /usr/local/bin/dote $DOTE_OPTS 2>&1
