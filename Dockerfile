@@ -1,5 +1,5 @@
 ARG COMMENT="Adding DOTE..."
-ARG DOTE_VERSION="latest"
+ARG DOTE_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_arm64"
 ARG PIHOLE_VERSION="latest"
 
 FROM debian:bullseye AS build
@@ -8,7 +8,7 @@ RUN apt-get update \
        curl
 
 RUN echo "${COMMENT}" \
-    && curl -fsSLo /usr/local/bin/dote "https://github.com/chrisstaite/DoTe/releases/${DOTE_VERSION}/download/dote_arm64 \
+    && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
 FROM pihole/pihole:${PIHOLE_VERSION}

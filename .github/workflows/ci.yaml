@@ -16,11 +16,6 @@ on:
         description: Which version of dote?
         required: false
         default: ''
-      enable-build-cache:
-        description: Enable docker build cache?
-        type: boolean
-        required: false
-        default: true
 
 jobs:
   docker:
@@ -49,21 +44,20 @@ jobs:
           LATEST_PIHOLE_VERSION="$(gh release view --repo=https://github.com/pi-hole/docker-pi-hole --json tagName --template '{{.tagName}}')"
           DESIRED_PIHOLE_VERSION='${{ inputs.desired-pihole-version }}'
           echo "pihole-version=${DESIRED_PIHOLE_VERSION:-${LATEST_PIHOLE_VERSION}}" >> "${GITHUB_OUTPUT}"
-          LATEST_DOTE_VERSION="$(gh release view --repo=https://github.com/chrisstaite/DoTe --json tagName --template '{{.tagName}}')"
-          DESIRED_DOTE_VERSION='${{ inputs.desired-dote-version }}'
-          echo "dote-version=${DESIRED_DOTE_VERSION:-${LATEST_DOTE_VERSION}}" >> "${GITHUB_OUTPUT}"
+          DESIRED_DOTE_URL="$(gh release view ${{ inputs.desired-dote-version }} --repo=https://github.com/chrisstaite/DoTe --json assets --jq '.assets[] | select(.name == "dote_arm64") | .url')"
+          echo "dote-url=${DESIRED_DOTE_URL}" >> "${GITHUB_OUTPUT}"
           echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
 
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
-          platforms: linux/arm64,linux/amd64
+          platforms: linux/arm64
           push: true
           build-args: |
             "COMMENT=Today's date: ${{ steps.info.outputs.today }}"
             "PIHOLE_VERSION=${{ steps.info.outputs.pihole-version }}"
-            "DOTE_VERSION=${{ steps.info.outputs.dote-version }}"
+            "DOTE_URL=${{ steps.info.outputs.dote-url }}"
           tags: |
            bennettp123/pihole-dote:${{ steps.info.outputs.pihole-version }}
            bennettp123/pihole-dote:latest
