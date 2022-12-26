@@ -12,8 +12,6 @@ RUN echo $COMMENT \
     && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
-COPY s6-overlay /etc/s6-overlay
-
 FROM pihole/pihole:${PIHOLE_VERSION}
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN addgroup \
@@ -30,5 +28,6 @@ RUN addgroup \
         --no-create-home \
         --gecos '' \
         dote
+COPY s6-overlay /etc/s6-overlay
 COPY --from=build /usr/local/bin/dote /usr/local/bin/dote
 
