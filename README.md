@@ -12,7 +12,7 @@ Follow the instructions here: https://github.com/boostchicken/udm-utilities/tree
 
 However, update your scripts to use `bennettp123/pihole-dote:latest` instead of `pihole/pihole:latest`.
 
-Note that DoTE is baked into the image, and not updated at reboot. DoTE can be updated along with pihole itself, by running `podman pull bennettp123/pihole-dote:latest`, then removing and recreating the pihole container.
+Note that DoTE is baked into the image, and not updated at reboot. DoTE can be updated, along with pihole itself, by running `podman pull bennettp123/pihole-dote:latest`, then removing and recreating the pihole container.
 
 Suggested changes to `upd_pihole.sh`:
 
