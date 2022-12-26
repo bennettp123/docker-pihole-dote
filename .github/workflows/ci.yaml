@@ -48,6 +48,10 @@ jobs:
           echo "dote-url=${DESIRED_DOTE_URL}" >> "${GITHUB_OUTPUT}"
           echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
 
+      - name: troubleshooting
+        run: |
+          echo "'${{ steps.info.outputs.dote-url }}'" | LC_ALL=C cat -vt
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -55,9 +59,9 @@ jobs:
           platforms: linux/arm64
           push: true
           build-args: |
+            "DOTE_URL=${{ steps.info.outputs.dote-url }}"
             "COMMENT=Today's date: ${{ steps.info.outputs.today }}"
             "PIHOLE_VERSION=${{ steps.info.outputs.pihole-version }}"
-            "DOTE_URL=${{ steps.info.outputs.dote-url }}"
           tags: |
            bennettp123/pihole-dote:${{ steps.info.outputs.pihole-version }}
            bennettp123/pihole-dote:latest
