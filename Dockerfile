@@ -15,7 +15,7 @@ RUN echo $COMMENT \
 FROM pihole/pihole:${PIHOLE_VERSION}
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN mkdir -p /etc/cont-init.d \
-    && echo -e  "#!/bin/sh\n/usr/local/bin/dote \\\$DOTE_OPTS -d\n" > /etc/cont-init.d/10-dote.sh \
+    && echo -e '#!/bin/sh\n/usr/local/bin/dote $DOTE_OPTS -d\n' > /etc/cont-init.d/10-dote.sh \
     && chmod +x /etc/cont-init.d/10-dote.sh
 COPY --from=build /usr/local/bin/dote /usr/local/bin/dote
 
