@@ -1,0 +1,71 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      desired-pihole-version:
+        description: Which version of pihole?
+        required: false
+        default: ''
+      desired-dote-version:
+        description: Which version of dote?
+        required: false
+        default: ''
+      enable-build-cache:
+        description: Enable docker build cache?
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Get current version numbers
+        id: info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST_PIHOLE_VERSION="$(gh release view --repo=https://github.com/pi-hole/docker-pi-hole --json tagName --template '{{.tagName}}')"
+          DESIRED_PIHOLE_VERSION='${{ inputs.desired-pihole-version }}'
+          echo "pihole-version=${DESIRED_PIHOLE_VERSION:-${LATEST_PIHOLE_VERSION}}" >> "${GITHUB_OUTPUT}"
+          LATEST_DOTE_VERSION="$(gh release view --repo=https://github.com/chrisstaite/DoTe --json tagName --template '{{.tagName}}')"
+          DESIRED_DOTE_VERSION='${{ inputs.desired-dote-version }}'
+          echo "dote-version=${DESIRED_DOTE_VERSION:-${LATEST_DOTE_VERSION}}" >> "${GITHUB_OUTPUT}"
+          echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/arm64,linux/amd64
+          push: true
+          build-args: |
+            "COMMENT=Today's date: ${{ steps.info.outputs.today }}"
+            "PIHOLE_VERSION=${{ steps.info.outputs.pihole-version }}"
+            "DOTE_VERSION=${{ steps.info.outputs.dote-version }}"
+          tags: |
+           bennettp123/pihole-dote:${{ steps.info.outputs.pihole-version }}
+           bennettp123/pihole-dote:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
