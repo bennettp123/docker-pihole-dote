@@ -1,3 +1,5 @@
+ARG PIHOLE_VERSION="latest"
+
 FROM debian:bullseye AS build
 RUN apt-get update \
     && apt-get install -y \
@@ -10,9 +12,7 @@ RUN echo $COMMENT \
     && curl -fvSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
-ARG PIHOLE_VERSION="latest"
-
-FROM pihole/pihole:$PIHOLE_VERSION
+FROM pihole/pihole:${PIHOLE_VERSION}
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN mkdir -p /etc/cont-init.d \
     && echo -e  "#!/bin/sh\n/usr/local/bin/dote \\\$DOTE_OPTS -d\n" > /etc/cont-init.d/10-dote.sh \
