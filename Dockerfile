@@ -7,8 +7,8 @@ RUN apt-get update \
     && apt-get install -y \
        curl
 
-RUN echo "${COMMENT}" \
-    && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
+RUN echo ${COMMENT} \
+    && curl -fsSLo /usr/local/bin/dote ${DOTE_URL} \
     && chmod +x /usr/local/bin/dote
 
 FROM pihole/pihole:${PIHOLE_VERSION}
