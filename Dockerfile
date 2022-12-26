@@ -9,7 +9,7 @@ ARG COMMENT="Adding DOTE..."
 ARG DOTE_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_arm64"
 
 RUN echo $COMMENT \
-    && curl -fvSLo /usr/local/bin/dote "${DOTE_URL}" \
+    && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
 FROM pihole/pihole:${PIHOLE_VERSION}
