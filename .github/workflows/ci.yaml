@@ -48,18 +48,31 @@ jobs:
           echo "dote-url=${DESIRED_DOTE_URL}" >> "${GITHUB_OUTPUT}"
           echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
 
+      - name: Docket meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: bennettp123/pihole-dote
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=pihole-${{ steps.info.outputs.pihole-version }},enable={{is_default_branch}}
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/arm64
           push: true
+          pull: true
           build-args: |
             "DOTE_URL=${{ steps.info.outputs.dote-url }}"
             "COMMENT=Today's date: ${{ steps.info.outputs.today }}"
             "PIHOLE_VERSION=${{ steps.info.outputs.pihole-version }}"
-          tags: |
-           bennettp123/pihole-dote:${{ steps.info.outputs.pihole-version }}
-           bennettp123/pihole-dote:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
