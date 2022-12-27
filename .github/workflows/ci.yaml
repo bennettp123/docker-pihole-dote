@@ -48,7 +48,7 @@ jobs:
           echo "dote-url=${DESIRED_DOTE_URL}" >> "${GITHUB_OUTPUT}"
           echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
 
-      - name: Docket meta
+      - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
