@@ -9,6 +9,9 @@ ARG COMMENT="Adding DOTE..."
 ARG DOTE_ARM64_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_arm64"
 ARG DOTE_AMD64_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_linux"
 
+# populated by [BuildKit](https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope)
+ARG TARGETARCH
+
 RUN echo $COMMENT \
     && export DOTE_URL="$( test "${TARGETARCH}" = "arm64" && echo "${DOTE_ARM64_URL}" || echo "${DOTE_AMD64_URL}" )" \
     && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
