@@ -18,9 +18,6 @@ RUN echo $COMMENT \
     && chmod +x /usr/local/bin/dote
 
 FROM pihole/pihole:${PIHOLE_VERSION}
-RUN apt-get update \
-    && apt-get dist-upgrade -y \
-    && rm -rf /var/lib/apt/lists/*
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN addgroup \
         --system \
@@ -38,4 +35,8 @@ RUN addgroup \
         dote
 COPY s6-overlay /etc/s6-overlay
 COPY --from=build /usr/local/bin/dote /usr/local/bin/dote
+
+RUN apt-get update \
+    && apt-get dist-upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
 
