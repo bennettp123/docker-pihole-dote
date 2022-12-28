@@ -5,14 +5,22 @@ RUN apt-get update \
     && apt-get install -y \
        curl
 
+RUN curl -sSL https://git.io/get-mo -o /usr/local/bin/mo \
+    && chmod +x /usr/local/bin/mo
+
 ARG COMMENT="Adding DOTE..."
-ARG DOTE_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_arm64"
+ARG DOTE_URL="https://github.com/chrisstaite/DoTe/releases/latest/download/dote_{{SUFFIX}}"
 
 RUN echo $COMMENT \
+    && export SUFFIX="$( test "${TARGETARCH}" = "arm64" && echo "${TARGETARCH}" || echo linux )" \
+    && export DOTE_URL="$( echo "${DOTE_URL}" | mo -u)" \
     && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
 FROM pihole/pihole:${PIHOLE_VERSION}
+RUN apt-get update \
+    && apt-get dist-upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN addgroup \
         --system \
