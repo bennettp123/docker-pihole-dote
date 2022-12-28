@@ -44,8 +44,10 @@ jobs:
           LATEST_PIHOLE_VERSION="$(gh release view --repo=https://github.com/pi-hole/docker-pi-hole --json tagName --template '{{.tagName}}')"
           DESIRED_PIHOLE_VERSION='${{ inputs.desired-pihole-version }}'
           echo "pihole-version=${DESIRED_PIHOLE_VERSION:-${LATEST_PIHOLE_VERSION}}" >> "${GITHUB_OUTPUT}"
-          DESIRED_DOTE_URL="$(gh release view ${{ inputs.desired-dote-version }} --repo=https://github.com/chrisstaite/DoTe --json assets --jq '.assets[] | select(.name == "dote_arm64") | .url')"
-          echo "dote-url=${DESIRED_DOTE_URL}" >> "${GITHUB_OUTPUT}"
+          DESIRED_DOTE_ARM64_URL="$(gh release view ${{ inputs.desired-dote-version }} --repo=https://github.com/chrisstaite/DoTe --json assets --jq '.assets[] | select(.name == "dote_arm64") | .url')"
+          DESIRED_DOTE_AMD64_URL="$(gh release view ${{ inputs.desired-dote-version }} --repo=https://github.com/chrisstaite/DoTe --json assets --jq '.assets[] | select(.name == "dote_linux") | .url')"
+          echo "dote-arm64-url=${DESIRED_DOTE_ARM64_URL}" >> "${GITHUB_OUTPUT}"
+          echo "dote-amd64-url=${DESIRED_DOTE_AMD64_URL}" >> "${GITHUB_OUTPUT}"
           echo "today=$(date '+%Y-%m-%d')" >> "${GITHUB_OUTPUT}"
 
       - name: Docker meta
@@ -69,7 +71,8 @@ jobs:
           push: true
           pull: true
           build-args: |
-            "DOTE_URL=${{ steps.info.outputs.dote-url }}"
+            "DOTE_ARM64_URL=${{ steps.info.outputs.dote-arm64-url }}"
+            "DOTE_AMD64_URL=${{ steps.info.outputs.dote-amd64-url }}"
             "COMMENT=Today's date: ${{ steps.info.outputs.today }}"
             "PIHOLE_VERSION=${{ steps.info.outputs.pihole-version }}"
           tags: ${{ steps.meta.outputs.tags }}
