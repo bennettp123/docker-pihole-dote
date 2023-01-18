@@ -17,7 +17,7 @@ RUN echo $COMMENT \
     && curl -fsSLo /usr/local/bin/dote "${DOTE_URL}" \
     && chmod +x /usr/local/bin/dote
 
-FROM pihole/pihole:${PIHOLE_VERSION} AS unsquashed
+FROM pihole/pihole:${PIHOLE_VERSION}
 ENV DOTE_OPTS="-s 127.0.0.1:5053"
 RUN addgroup \
         --system \
@@ -39,10 +39,4 @@ COPY --from=build /usr/local/bin/dote /usr/local/bin/dote
 RUN apt-get update \
     && apt-get dist-upgrade -y \
     && rm -rf /var/lib/apt/lists/*
-
-# squash the image into a single layer to reduce size on vfs
-# note that args/envs are lost, and may need to be redefined!
-FROM scratch
-COPY --from=unsquashed / /
-ENV DOTE_OPTS="-s 127.0.0.1:5053"
 
