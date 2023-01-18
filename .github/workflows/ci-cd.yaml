@@ -3,7 +3,7 @@ name: ci/cd
 on:
   push:
     branches:
-      - *
+      - '*'
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
