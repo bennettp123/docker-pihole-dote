@@ -1,9 +1,9 @@
-name: ci
+name: ci/cd
 
 on:
   push:
     branches:
-      - main
+      - '*'
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -79,3 +79,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
